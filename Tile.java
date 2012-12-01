@@ -19,4 +19,11 @@ public class Tile {
 		found = false;
 	}
 
+	/**
+	* Returns the value of this tile.
+	*/
+	public int value() {
+		return value;
+	}
+
 }
