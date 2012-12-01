@@ -41,5 +41,4 @@ public class Tile {
 	public boolean found() {
 		return found;
 	}
-
 }

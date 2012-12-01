@@ -59,14 +59,25 @@ public class Board {
 	* Prints out the current game board.
 	*/
 	public void print() {
-		for(Tile tile : board) {
-			System.out.print(tile.value());
-			if(tile.found()) {
-				System.out.print("*");
+		for(int i = 0; i < board.length; i++) {
+			Tile tile = board[i];
+			if(i % SIZE == 0) {
+				System.out.println();
+				System.out.println("-------------------------------");
+				System.out.print("|");
 			}
-			System.out.print(" ");
+
+			String number = " " + tile.value();
+			if(tile.found()) {
+				number += "*";
+			}
+			while(number.length() < 5) {
+				number += " ";
+			}
+			System.out.print(number + "|");
 		}
 		System.out.println();
+		System.out.println("-------------------------------");
 	}
 
 	/**
@@ -82,20 +93,9 @@ public class Board {
 			return;
 		}
 
-		for(int col = 0; col < SIZE; col++) {
-			boolean foundCol = true;
-			boolean foundRow = true;
-			for(int row = 0; row < SIZE; row++) {
-				if (foundCol) { // This column can still win.
-					Tile vertical = board[col * SIZE + row];
-					foundCol = vertical.found();
-				}
-
-				if(foundRow) { // This row can still win.
-					Tile horizontal = board[row * SIZE + col];
-					foundRow = horizontal.found();
-				}
-			}
+		for(int i = 0; i < SIZE; i++) {
+			boolean foundCol = checkColumn(i);
+			boolean foundRow = checkRow(i);
 
 			if(foundCol || foundRow) { // Winning path found.
 				gameWon = true;
@@ -104,6 +104,39 @@ public class Board {
 		}
 	}
 
+	/**
+	*	Returns whether this column is a winning path.
+	* @param col column to look in.
+	*/
+	private boolean checkColumn(int col) {
+		boolean valid = true;
+		for(int i = 0; i < SIZE; i++) {
+			if (valid) { // This column can still win.
+				Tile tile = board[i * SIZE + col];
+				valid = tile.found();
+			}
+		}
+		return valid;
+	}
+
+	/**
+	*	Returns whether this row is a winning path.
+	* @param row row to look in.
+	*/
+	private boolean checkRow(int row) {
+		boolean valid = true;
+		for(int i = 0; i < SIZE; i++) {
+			if (valid) { // This column can still win.
+				Tile tile = board[row * SIZE + i];
+				valid = tile.found();
+			}
+		}
+		return valid;
+	}
+
+	/**
+	*	Returns whether there is a winning path diagonally.
+	*/
 	private boolean checkDiagonals() {
 		boolean foundLeft = true;
 		boolean foundRight = true;
@@ -122,8 +155,34 @@ public class Board {
 		return foundLeft || foundRight;
 	}
 
+	/**
+	*	Returns whether or not there exists a winning path.
+	*/
 	public boolean gameWon() {
 		return gameWon;
 	}
 
+	/**
+	*	@param x x-coordinate on board.
+	* @param y y-coordinate on board.
+	*/
+	public boolean check(int x, int y) {
+		if(gameWon) { // Don't need to check if already exist winning path.
+			return gameWon;
+		}
+
+		x--; // Convert to Java index.
+		y--;
+
+		Tile tile = board[y * SIZE + x];
+		boolean oldStatus = tile.found();
+		tile.found(true); // Sets this tile as found.
+		boolean result = checkColumn(x) || checkRow(y);
+
+		if(x == y || (x + y == SIZE - 1)) {
+			result = result || checkDiagonals();
+		}
+		tile.found(oldStatus); // Undo change.
+		return result;
+	}
 }
