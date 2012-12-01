@@ -26,4 +26,11 @@ public class Tile {
 		return value;
 	}
 
+	/**
+	* Mark this tile as found.
+	*/
+	public void found() {
+		found = true;
+	}
+
 }
