@@ -26,18 +26,29 @@ public class Board {
 		}
 	}
 
+	/**
+	* Simulates one round of the game. Updates game status if a number is found.
+	*/
 	public void play() {
 		for(int i = 0; i < SIZE; i++) {
 			int number = RAND.nextInt(100) + 1;
-			search(i, number);
+			if(search(i, number)) { // Searches the column
+				updateStatus();
+			}
 		}
 	}
 
+	/**
+  * Searches and returns whether or not value is found in column.
+  *
+  * @param     column the column to search in.
+  * @param		 value the value to look for.
+  */
 	private boolean search(int column, int value) {
 		for(int i = 0; i < SIZE; i++) {
 			Tile tile = board[column + i * SIZE];
 			if(tile.value() == value) {
-				tile.found();
+				tile.found(true);
 				return true;
 			}
 		}
@@ -48,9 +59,71 @@ public class Board {
 	* Prints out the current game board.
 	*/
 	public void print() {
-		for(Tile t : board) {
-			System.out.print(t.value() + " ");
+		for(Tile tile : board) {
+			System.out.print(tile.value());
+			if(tile.found()) {
+				System.out.print("*");
+			}
+			System.out.print(" ");
 		}
+		System.out.println();
+	}
+
+	/**
+	*	Check to see if there's a winning path. Does nothing if one already exists.
+	*/
+	private void updateStatus() {
+		if(gameWon) { // Exit if already found winning path before.
+			return;
+		}
+
+		if(checkDiagonals()) { // Exit if winning path is one of the diagonals.
+			gameWon = true;
+			return;
+		}
+
+		for(int col = 0; col < SIZE; col++) {
+			boolean foundCol = true;
+			boolean foundRow = true;
+			for(int row = 0; row < SIZE; row++) {
+				if (foundCol) { // This column can still win.
+					Tile vertical = board[col * SIZE + row];
+					foundCol = vertical.found();
+				}
+
+				if(foundRow) { // This row can still win.
+					Tile horizontal = board[row * SIZE + col];
+					foundRow = horizontal.found();
+				}
+			}
+
+			if(foundCol || foundRow) { // Winning path found.
+				gameWon = true;
+				return;
+			}
+		}
+	}
+
+	private boolean checkDiagonals() {
+		boolean foundLeft = true;
+		boolean foundRight = true;
+		for(int i = 0; i < SIZE; i++) {
+			if(foundLeft) {
+				Tile tile = board[i * SIZE + i];
+				foundLeft = tile.found();
+			}
+
+			if(foundRight) {
+				Tile tile = board[(i + 1) * (SIZE - 1)];
+				foundRight = tile.found();
+			}
+		}
+
+		return foundLeft || foundRight;
+	}
+
+	public boolean gameWon() {
+		return gameWon;
 	}
 
 }
