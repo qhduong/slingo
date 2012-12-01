@@ -27,10 +27,19 @@ public class Tile {
 	}
 
 	/**
-	* Mark this tile as found.
+	* Mark this tile as found depending on value.
+	*
+	* @param		value whether or not to mark this tile as found.
 	*/
-	public void found() {
-		found = true;
+	public void found(boolean value) {
+		found = value;
+	}
+
+	/**
+	* Return if this tile has been found or not.
+	*/
+	public boolean found() {
+		return found;
 	}
 
 }
