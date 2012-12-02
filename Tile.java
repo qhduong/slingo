@@ -31,14 +31,29 @@ public class Tile {
 	*
 	* @param		value whether or not to mark this tile as found.
 	*/
-	public void found(boolean value) {
+	public void setStatus(boolean value) {
 		found = value;
 	}
 
 	/**
 	* Return if this tile has been found or not.
 	*/
-	public boolean found() {
+	public boolean status() {
 		return found;
+	}
+
+	/**
+	* Return a string representation of this tile, will follow by a * if found.
+	*/
+	public String toString() {
+		String result = " " + value;
+		if(found){
+			result += "*";
+		}
+
+		for(int i = result.length(); i < 5; i++) {
+			result += " ";
+		}
+		return result;
 	}
 }
